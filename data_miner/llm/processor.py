@@ -11,13 +11,16 @@ import threading
 import json
 from tqdm import tqdm
 
-from llm.langchain_ollama import LangChainPipeline, LangChain_config
+from data_miner.llm.langchain_ollama import LangChainPipeline, LangChain_config
 
 @dataclass
 class ProcessorConfig:
     
+    # langchain config
+    langchain_config: LangChain_config
+    
     # run details
-    run_name: str = "mail_processor_1"
+    run_name: str = "processor_1"
     start_date: datetime = datetime.now()
     force_run: bool = False # if True, the pre-exising run will be re-initialized
     
@@ -25,17 +28,15 @@ class ProcessorConfig:
     input_data_folder: str = str(Path("./mount/metadata"))
     
     # save data folder
-    save_folder: str = str(Path("./mount/processed_mail_metadata"))
+    save_folder: str = str(Path("./mount/processed_metadata"))
 
     # run limits for each processing
     max_retries: int = 3
     max_wait_time: int = 5  # in seconds
         
     # log_folder
-    log_folder: str = str(Path("./mount/mail_processing_logs"))
+    log_folder: str = str(Path("./mount/processing_logs"))
     
-    # langchain config
-    langchain_config: LangChain_config = LangChain_config()
 
 
 class TimeoutException(Exception):
@@ -124,7 +125,7 @@ class Processor(ABC):
     
     
     @abstractmethod
-    def retrieve_info_from_results(self, results) -> dict:
+    def retrieve_info_from_results(self, result: str) -> dict:
         """
         function to be implemented in the child class to retrieve information from the returned results based on 
         - output schema
