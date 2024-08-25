@@ -15,9 +15,11 @@ class TopSkillsTable(BaseTable):
         create_table_query = f"""
         CREATE TABLE IF NOT EXISTS {self.table_name}(
             id INT AUTO_INCREMENT PRIMARY KEY,
-            entry_date DATE,
+            entry_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             job_id VARCHAR(100),
-            skills VARCHAR(1000)
+            top_skills VARCHAR(1000),
+            number_of_skills INT,
+            exact_llm_output TEXT
         )
         """
         

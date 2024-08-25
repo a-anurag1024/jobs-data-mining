@@ -1,5 +1,7 @@
 from typing import List
 import re
+import os
+from tqdm import tqdm
 import json
 
 from data_miner.llm.processor import Processor, ProcessorConfig
@@ -39,6 +41,9 @@ class TopSkillsMiner(Processor):
         try:
             pattern = r"\n\s*\d+\.\s*([^\n]+)"
             top_skills = re.findall(pattern, result)
+            if len(top_skills) == 0:
+                pattern = r"\n\s*\d+\)\s*([^\n]+)"
+                top_skills = re.findall(pattern, result)
             assert len(top_skills) <110, "The number of top skills is more than 10"
             assert len(top_skills) > 0, f"The number of top skills is less than 1"
         except:
@@ -50,3 +55,25 @@ class TopSkillsMiner(Processor):
             "number_of_skills": len(top_skills),
             "exact_llm_output": result
         }
+        
+        
+    def save_to_db(self):
+        
+        with open(os.path.join(self.config.log_folder, "run_plan.json"), "r") as f:
+            run_plan = json.load(f)
+            
+        save_data = []
+        for obj in run_plan:
+            if os.path.exists(os.path.join(self.config.save_folder, f"{obj['queue_id']}.json")):
+                with open(os.path.join(self.config.save_folder, f"{obj['queue_id']}.json"), "r") as f:
+                    data = json.load(f)
+                save_data.append({
+                    "job_id": obj["job_id"],
+                    "top_skills": data["top_skills"],
+                    "number_of_skills": data["number_of_skills"],
+                    "exact_llm_output": data["exact_llm_output"]
+                })
+        
+        print(f"Saving {len(save_data)} records to the database ...") 
+        for data in tqdm(save_data):
+            self.top_skills_table.insert_data(data)

@@ -15,7 +15,7 @@ def get_top_skills():
         save_folder=str(Path("../mount/top_skills/processed")),
         log_folder=str(Path("../mount/top_skills/logs")),
         langchain_config=langchain_config,
-        max_wait_time=60
+        max_wait_time=30
     )
     
     db_creds = DB_Creds(
@@ -31,6 +31,9 @@ def get_top_skills():
     
     # Run the processor
     top_skills_miner.run()
+    
+    # Save the results to the database
+    top_skills_miner.save_to_db()
     
     
 if __name__ == "__main__":
