@@ -1,5 +1,5 @@
 from data_miner.db.base_table import BaseTable, DB_Creds
-
+import pandas as pd
 
 class TopSkillsTable(BaseTable):
     def __init__(self, db_creds: DB_Creds):
@@ -16,8 +16,8 @@ class TopSkillsTable(BaseTable):
         CREATE TABLE IF NOT EXISTS {self.table_name}(
             id INT AUTO_INCREMENT PRIMARY KEY,
             entry_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            job_id VARCHAR(100),
-            top_skills VARCHAR(1000),
+            job_id VARCHAR(256),
+            top_skills VARCHAR(10000),
             number_of_skills INT,
             exact_llm_output TEXT
         )
@@ -34,3 +34,12 @@ class TopSkillsTable(BaseTable):
         data = cursor.fetchall()
         cursor.close()
         return [d[0] for d in data]
+    
+    
+    def get_all_top_skills(self) -> pd.DataFrame:
+        cursor = self.db.cursor()
+        command = f"SELECT * FROM {self.table_name}"
+        cursor.execute(command)
+        data = cursor.fetchall()
+        cursor.close()
+        return pd.DataFrame(data, columns=[d[0] for d in cursor.description])

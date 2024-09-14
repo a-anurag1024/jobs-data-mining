@@ -1,0 +1,12 @@
+services:
+  qdrant:
+    image: qdrant/qdrant
+    restart: always
+    ports:
+      - 6334:6334
+      - 6333:6333
+    expose:
+      - "6334"
+      - "6333"
+    volumes:
+      - ./mount/qdrant_data:/qdrant/storage

@@ -3,3 +3,5 @@ langchain-ollama
 mysql-connector-python
 tqdm
 pandas
+sentence-transformers
+qdrant-client

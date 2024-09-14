@@ -63,7 +63,7 @@ class BaseTable(ABC):
         """
         cursor = self.db.cursor()
         entry_tags = list(data.keys())
-        command = f"""INSERT INTO jobs ({', '.join(entry_tags)})"""
+        command = f"""INSERT INTO {self.table_name} ({', '.join(entry_tags)})"""
         command += f" VALUES ({', '.join(['%s' for _ in range(len(entry_tags))])})"
         values = [data[tag] for tag in entry_tags]
         cursor.execute(command, values)
